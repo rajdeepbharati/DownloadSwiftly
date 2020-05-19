@@ -11,6 +11,8 @@ import SwiftUI
 struct ContentView: View {
     @State var urlText: String = ""
     @State var url: URL!
+    @State private var showingAlert = false
+    @State private var noUrlEntered = false
 
     var body: some View {
         VStack {
@@ -19,12 +21,16 @@ struct ContentView: View {
 
             Button(action: {
                 print("url is: \(self.urlText)")
+                if self.urlText == "" {
+                    self.noUrlEntered = true
+                    return
+                }
                 let urlArr: Array = self.urlText.split(separator: "/").map(String.init)
                 print(urlArr.last ?? "myfile")
                 self.url = URL(string: self.urlText)!
                 URLSession.shared.downloadTask(with: self.url) { url, response, error in
                     guard
-                        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+                        let downloads = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,
                         let url = url
                     else {
                         return
@@ -32,7 +38,7 @@ struct ContentView: View {
 
                     do {
                         let urlArr: Array = self.urlText.split(separator: "/").map(String.init)
-                        let file = docs.appendingPathComponent(urlArr.last ?? "myfile")
+                        let file = downloads.appendingPathComponent(urlArr.last ?? "myfile")
                         try FileManager.default.moveItem(atPath: url.path, toPath: file.path)
                     } catch {
                         print(error.localizedDescription)
@@ -41,6 +47,9 @@ struct ContentView: View {
             }) {
                 Text("Download")
                     .foregroundColor(.white)
+            }
+            .alert(isPresented: $noUrlEntered) {
+                Alert(title: Text("No url entered!"), message: Text("Please enter a url to a remote file that you want to download."), dismissButton: .default(Text("Ok")))
             }
 
             Spacer()
