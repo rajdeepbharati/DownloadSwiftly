@@ -3,7 +3,7 @@
 //  DownloadSwiftlyUITests
 //
 //  Created by Rajdeep Bharati on 03/05/20.
-//  Copyright © 2020 rb. All rights reserved.
+//  Copyright © 2020 Rajdeep Bharati. All rights reserved.
 //
 
 import XCTest
